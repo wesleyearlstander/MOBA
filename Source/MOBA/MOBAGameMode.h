@@ -13,6 +13,24 @@ class AMOBAGameMode : public AGameModeBase
 
 public:
 	AMOBAGameMode();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lanes")
+	TArray<AActor*> Team1LaneTop;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lanes")
+	TArray<AActor*> Team1LaneMiddle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lanes")
+	TArray<AActor*> Team1LaneBottom;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lanes")
+	TArray<AActor*> Team2LaneTop;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lanes")
+	TArray<AActor*> Team2LaneMiddle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lanes")
+	TArray<AActor*> Team2LaneBottom;
 };
 
 
