@@ -16,12 +16,15 @@ class MOBA_API ACreepCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ACreepCharacter();
+
+	UPROPERTY(BlueprintReadWrite, Category = Movement)
+	TArray<ACreepWaypoint*> Waypoints;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Creep)
-	TEnumAsByte<Lane> lane = Lane::Middle;
+	TEnumAsByte<ELane> Lane = ELane::Middle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Creep)
-	TEnumAsByte<Team> team = Team::Red;
+	TEnumAsByte<ETeam> Team = ETeam::Red;
 
 protected:
 	// Called when the game starts or when spawned

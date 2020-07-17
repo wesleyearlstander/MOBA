@@ -7,7 +7,7 @@
 DECLARE_LOG_CATEGORY_EXTERN(LogMOBA, Log, All);
 
 UENUM(BlueprintType)
-enum Lane
+enum ELane
 {
 	Top		UMETA(DisplayName = "Top"),
 	Middle	UMETA(DisplayName = "Middle"),
@@ -15,7 +15,7 @@ enum Lane
 };
 
 UENUM(BlueprintType)
-enum Team
+enum ETeam
 {
 	Red		UMETA(DisplayName = "Red"),
 	Blue	UMETA(DisplayName = "Blue")

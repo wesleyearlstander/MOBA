@@ -22,6 +22,6 @@ public:
 	int32 order = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Creep)
-	TEnumAsByte<Lane> lane = Lane::Middle;
+	TEnumAsByte<ELane> Lane = ELane::Middle;
 	
 };

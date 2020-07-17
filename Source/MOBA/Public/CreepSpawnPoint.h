@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "../MOBA.h"
 #include "CreepSpawnPoint.generated.h"
 
 UCLASS()
@@ -22,5 +23,11 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
+	TEnumAsByte<ELane> Lane;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
+	TEnumAsByte<ETeam> Team;
 
 };
