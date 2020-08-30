@@ -4,6 +4,7 @@
 #include "MOBAPlayerController.h"
 #include "MOBACharacter.h"
 #include "kismet/GameplayStatics.h"
+#include "Public/CreepAIController.h"
 #include "UObject/ConstructorHelpers.h"
 
 AMOBAGameMode::AMOBAGameMode()
@@ -33,12 +34,13 @@ void AMOBAGameMode::InitGame(const FString& MapName, const FString& Options, FSt
 	//GetWorld()->GetTimerManager().SetTimer()
 
 	GatherCreepWaypoints();
-	//SpawnCreepWave(5);
+
+	SpawnCreepWave(1);
 }
 
 void AMOBAGameMode::StartPlay() {
 	Super::StartPlay();
-	SpawnCreepWave(5);
+	//SpawnCreepWave(5);
 }
 
 void AMOBAGameMode::GatherCreepWaypoints()
@@ -49,7 +51,7 @@ void AMOBAGameMode::GatherCreepWaypoints()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), CreepSpawnPointBlueprint, Points);
 
 	uint8 num = Points.Num();
-	CreepSpawnPoints.Init(NULL, num);
+	CreepSpawnPoints.Init(nullptr, num);
 	for (uint8 i = 0; i < num; ++i) {
 		CreepSpawnPoints[i] = Cast<ACreepSpawnPoint>(Points[i]);
 	}
@@ -59,32 +61,32 @@ void AMOBAGameMode::GatherCreepWaypoints()
 	//TODO: Can parallize this for large amount of waypoints 
 	for (uint16 i = 0; i < count; ++i) { //Count waypoints for each lane
 		ACreepWaypoint* waypoint = Cast<ACreepWaypoint>(Waypoints[i]);
-		WaypointCounts[(int8)(waypoint->Lane)]++;
+		WaypointCounts[(int)(waypoint->Lane)]++;
 	}
-
-	Team1LaneTop.Init(NULL, WaypointCounts[(int8)(ELane::Top)]);
-	Team2LaneTop.Init(NULL, WaypointCounts[(int8)(ELane::Top)]);
-	Team1LaneMiddle.Init(NULL, WaypointCounts[(int8)(ELane::Middle)]);
-	Team2LaneMiddle.Init(NULL, WaypointCounts[(int8)(ELane::Middle)]);
-	Team1LaneBottom.Init(NULL, WaypointCounts[(int8)(ELane::Bottom)]);
-	Team2LaneBottom.Init(NULL, WaypointCounts[(int8)(ELane::Bottom)]);
+	Team1LaneTop.Init(nullptr, WaypointCounts[(int)(ELane::Top)]);
+	Team2LaneTop.Init(nullptr, WaypointCounts[(int)(ELane::Top)]);
+	Team1LaneMiddle.Init(nullptr, WaypointCounts[(int)(ELane::Middle)]);
+	Team2LaneMiddle.Init(nullptr, WaypointCounts[(int)(ELane::Middle)]);
+	Team1LaneBottom.Init(nullptr, WaypointCounts[(int)(ELane::Bottom)]);
+	Team2LaneBottom.Init(nullptr, WaypointCounts[(int)(ELane::Bottom)]);
+	//UE_LOG(LogTemp, Warning, TEXT("%d,%d,%d"), WaypointCounts[(int)(ELane::Top)], WaypointCounts[(int)(ELane::Middle)], WaypointCounts[(int)(ELane::Bottom)]);
 
 	for (uint16 i = 0; i < count; ++i) {
 		ACreepWaypoint* waypoint = Cast<ACreepWaypoint>(Waypoints[i]);
 		switch (waypoint->Lane) {
 		case ELane::Top: {
-			Team1LaneTop.Insert(waypoint, waypoint->order);
-			Team2LaneTop.Insert(waypoint, WaypointCounts[(int8)(ELane::Top)] - 1 - waypoint->order);
+			Team1LaneTop[waypoint->order] = waypoint;
+			Team2LaneTop[WaypointCounts[(int)(ELane::Top)] - 1 - waypoint->order] = waypoint;
 			break;
 		}
 		case ELane::Middle: {
-			Team1LaneMiddle.Insert(waypoint, waypoint->order);
-			Team2LaneMiddle.Insert(waypoint, WaypointCounts[(int8)(ELane::Middle)] - 1 - waypoint->order);
+			Team1LaneMiddle[waypoint->order] = waypoint;
+			Team2LaneMiddle[WaypointCounts[(int)(ELane::Middle)] - 1 - waypoint->order] = waypoint;
 			break;
 		}
 		case ELane::Bottom: {
-			Team1LaneBottom.Insert(waypoint, waypoint->order);
-			Team2LaneBottom.Insert(waypoint, WaypointCounts[(int8)(ELane::Bottom)] - 1 - waypoint->order);
+			Team1LaneBottom[waypoint->order] = waypoint;
+			Team2LaneBottom[WaypointCounts[(int)(ELane::Bottom)] - 1 - waypoint->order] = waypoint;
 			break;
 		}
 		default: checkNoEntry(); //Crash if more lanes
@@ -103,19 +105,20 @@ void AMOBAGameMode::SpawnCreepWave(uint8 num) {
 
 void AMOBAGameMode::SpawnCreep(uint8 spawnIndex)
 {
-	Creeps.Add(GetWorld()->SpawnActorDeferred<ACreepCharacter>(CreepBlueprint, CreepSpawnPoints[spawnIndex]->GetActorTransform()));
-	Creeps.Last()->Lane = CreepSpawnPoints[spawnIndex]->Lane;
-	Creeps.Last()->Team = CreepSpawnPoints[spawnIndex]->Team;
-	GetWaypoints(Creeps.Last());
-	UGameplayStatics::FinishSpawningActor(Creeps.Last(), CreepSpawnPoints[spawnIndex]->GetActorTransform());
+	ACreepCharacter* Creep = GetWorld()->SpawnActorDeferred<ACreepCharacter>(CreepBlueprint, CreepSpawnPoints[spawnIndex]->GetActorTransform());
+	Creep->Lane = CreepSpawnPoints[spawnIndex]->Lane;
+	Creep->Team = CreepSpawnPoints[spawnIndex]->Team;
+	UGameplayStatics::FinishSpawningActor(Creep, CreepSpawnPoints[spawnIndex]->GetActorTransform());
+	Creeps.Add(Creep);
 }
 
 void AMOBAGameMode::GetWaypoints(ACreepCharacter* Creep)
 {
+	ACreepAIController* CreepAI = Cast<ACreepAIController>(Creep->GetController());
 	switch (Creep->Lane) {
-	case ELane::Top: (Creep->Team == ETeam::Blue) ? Creep->Waypoints = Team1LaneTop : Creep->Waypoints = Team2LaneTop; break;
-	case ELane::Middle: (Creep->Team == ETeam::Blue) ? Creep->Waypoints = Team1LaneMiddle : Creep->Waypoints = Team2LaneMiddle; break;
-	case ELane::Bottom: (Creep->Team == ETeam::Blue) ? Creep->Waypoints = Team1LaneBottom : Creep->Waypoints = Team2LaneBottom; break;
+	case ELane::Top: if (Creep->Team == ETeam::Blue) CreepAI->Waypoints.Append(Team1LaneTop); else CreepAI->Waypoints.Append(Team2LaneTop); break;
+	case ELane::Middle: if (Creep->Team == ETeam::Blue) CreepAI->Waypoints.Append(Team1LaneMiddle); else CreepAI->Waypoints.Append(Team2LaneMiddle); break;
+	case ELane::Bottom: if (Creep->Team == ETeam::Blue) CreepAI->Waypoints.Append(Team1LaneBottom); else CreepAI->Waypoints.Append(Team2LaneBottom); break;
 	default: checkNoEntry(); break;
 	}
 }

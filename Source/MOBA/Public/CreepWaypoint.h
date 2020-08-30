@@ -23,5 +23,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Creep)
 	TEnumAsByte<ELane> Lane = ELane::Middle;
+
+	FString ToString();
 	
 };

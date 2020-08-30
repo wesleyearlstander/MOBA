@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "MOBA.h"
 #include "GameFramework/Character.h"
-#include "Public/CreepWaypoint.h"
 #include "CreepCharacter.generated.h"
 
 UCLASS()
@@ -16,15 +15,27 @@ class MOBA_API ACreepCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ACreepCharacter();
-
-	UPROPERTY(BlueprintReadWrite, Category = Movement)
-	TArray<ACreepWaypoint*> Waypoints;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Creep)
 	TEnumAsByte<ELane> Lane = ELane::Middle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Creep)
 	TEnumAsByte<ETeam> Team = ETeam::Red;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Creep)
+	int Health = -1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Creep)
+	int MaxHealth = -1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Creep)
+	int AttackRange = -1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Creep)
+	int Damage = -1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Creep)
+	float AttackSpeed = -1;
 
 protected:
 	// Called when the game starts or when spawned

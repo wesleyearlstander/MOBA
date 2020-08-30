@@ -3,3 +3,7 @@
 
 #include "CreepWaypoint.h"
 
+FString ACreepWaypoint::ToString()
+{
+	return FString::Printf(TEXT("%d,%d"), order, Lane);
+}
