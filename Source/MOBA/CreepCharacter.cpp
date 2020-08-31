@@ -34,3 +34,8 @@ void ACreepCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+void ACreepCharacter::TakeDamage(float d)
+{
+	Health -= d;
+}
+
